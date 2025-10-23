@@ -31,6 +31,7 @@ gcloud functions deploy on-convo-input \
     --timeout=300s \
     --max-instances=10 \
     --set-env-vars="GOOGLE_CLOUD_PROJECT=$PROJECT_ID,ENVIRONMENT=$ENVIRONMENT" \
+    --set-secrets="OPENAI_API_KEY=openai-api-key:latest,GOOGLE_AI_API_KEY=google-ai-api-key:latest,AWS_CREDENTIALS=aws-credentials:latest" \
     --project=$PROJECT_ID
 
 # Deploy health check function
@@ -46,6 +47,7 @@ gcloud functions deploy llm-health-check \
     --memory=256MB \
     --timeout=30s \
     --set-env-vars="GOOGLE_CLOUD_PROJECT=$PROJECT_ID,ENVIRONMENT=$ENVIRONMENT" \
+    --set-secrets="OPENAI_API_KEY=openai-api-key:latest,GOOGLE_AI_API_KEY=google-ai-api-key:latest,AWS_CREDENTIALS=aws-credentials:latest" \
     --project=$PROJECT_ID
 
 # Create Pub/Sub topic if it doesn't exist
