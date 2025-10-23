@@ -17,32 +17,10 @@ gcloud config set project $PROJECT_ID
 # Build the chat backend
 cd apps/chat-backend
 
-# Create Dockerfile if it doesn't exist
+# Verify Dockerfile exists
 if [ ! -f Dockerfile ]; then
-    echo "📝 Creating Dockerfile..."
-    cat > Dockerfile << EOF
-FROM python:3.11-slim
-
-WORKDIR /app
-
-# Install system dependencies
-RUN apt-get update && apt-get install -y \\
-    gcc \\
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy requirements and install Python dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy application code
-COPY . .
-
-# Expose port
-EXPOSE 8080
-
-# Run the application
-CMD ["python", "app.py"]
-EOF
+    echo "❌ Dockerfile not found. Please create one first."
+    exit 1
 fi
 
 # Build and push container
