@@ -1,0 +1,13 @@
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=upload" />
+<div id="submit-button-container">
+    <div id="submit-button-icon-wrapper"
+    (click)="handleClick()"
+    (mousedown)="onMouseDown()"
+    (mouseup)="onMouseUp()"
+    (mouseleave)="onMouseLeave()"
+    [ngClass]="{'submit-button-down':mouseDown}">
+        <span class="material-symbols-outlined">
+            upload
+        </span>
+    </div>
+</div>

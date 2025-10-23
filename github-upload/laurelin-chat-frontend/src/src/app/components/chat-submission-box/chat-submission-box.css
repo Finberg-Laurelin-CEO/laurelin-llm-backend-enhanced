@@ -1,0 +1,33 @@
+#chat-submission-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+#chat-submission-wrapper {
+    border-radius: 1rem 0rem 0rem 1rem;
+    padding: 1rem 2rem 1rem, 1rem;
+    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+    white-space: pre;
+}
+
+#chat-submission-input {
+    font-size: 1rem;
+    width: 40rem;
+    border-style: none;
+    border-bottom-style: solid;
+    border-bottom-color: #666;
+    color: #666;
+    margin: 1rem 1rem .5rem 1rem;
+    height: 6rem;
+    white-space: pre;
+}
+#chat-submission-input:focus {
+    outline: none;
+}
+textarea::placeholder {
+    font-size: 1.0rem;
+    color: #ccc;
+}
+textarea {
+    white-space: pre;
+}

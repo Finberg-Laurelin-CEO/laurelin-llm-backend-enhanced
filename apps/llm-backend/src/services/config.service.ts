@@ -14,6 +14,10 @@ export interface Config {
   awsSecretAccessKey: string;
   awsRegion: string;
   
+  // Custom GPU Model
+  customGpuEndpoint: string;
+  customGpuApiKey: string;
+  
   // Flask Backend Integration
   flaskBackendUrl: string;
   flaskBackendSecret: string;
@@ -52,6 +56,9 @@ export class ConfigService {
       awsAccessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
       awsSecretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
       awsRegion: process.env.AWS_REGION || 'us-east-1',
+      
+      customGpuEndpoint: process.env.CUSTOM_GPU_ENDPOINT || '',
+      customGpuApiKey: process.env.CUSTOM_GPU_API_KEY || '',
       
       flaskBackendUrl: process.env.FLASK_BACKEND_URL || 'http://localhost:8080/api',
       flaskBackendSecret: process.env.FLASK_BACKEND_SECRET || '',

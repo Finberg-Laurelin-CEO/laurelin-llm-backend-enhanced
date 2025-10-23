@@ -1,0 +1,28 @@
+#submit-button-container {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    user-select: none;
+}
+#submit-button-icon-wrapper {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    color: #666;
+    padding: 0rem 1rem 0rem 1rem;
+    border-radius: 0rem 1rem 1rem 0rem;
+    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+}
+
+#submit-button-icon-wrapper:hover {
+    cursor: pointer;
+    box-shadow: rgba(0, 128, 20, .5) 0px 1px 2px 0px, rgba(0, 255, 20, .3) 0px 1px 3px 1px;
+}
+
+.submit-button-down {
+    box-shadow: none !important;
+    border-style: solid;
+    border-color: rgba(0, 230, 20, .4);
+    background: rgb(180, 255, 230);
+    border-width: 1px;
+}

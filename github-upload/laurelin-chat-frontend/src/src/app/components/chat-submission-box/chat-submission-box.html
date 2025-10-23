@@ -1,0 +1,13 @@
+<div id="chat-submission-container">
+    <div id="chat-submission-wrapper">
+        <textarea id="chat-submission-input" 
+        [(ngModel)]="textareaContent" 
+        class="laurelin-text-input"
+        type="textarea"
+        placeholder="Start your conversation! Press ctrl-enter or click to submit."
+        (keydown.control.enter)="onSubmitClick(true)"></textarea>
+    </div>
+    <div id="submit-button-wrapper">
+        <chat-submit-button (onSubmit)="onSubmitClick($event)"></chat-submit-button>
+    </div>
+</div>

@@ -1,0 +1,36 @@
+<div *ngIf="sent; else recvBubble">
+    <div class="chat-entry-container sent-container"
+        [ngClass]="{'bring-in-textbox':bringInTextbox}">
+        <div class="chat-entry-wrapper">
+            <div class="chat-entry-metadata laurelin-chat-subtext">
+                {{ts | date:'dd.MM.yyy HH:mm:ss'}}
+            </div>
+            <div class="chat-entry-bubble chat-bubble-sent">
+                <div class="chat-entry-text laurelin-text-regular">
+                    {{msg}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<ng-template #recvBubble>
+    <div id="loader-container" *ngIf="loading; else notLoading"
+    [ngClass]="{'clear-loader':doneLoading}">
+        <div class="loader"></div>
+    </div>
+    <ng-template #notLoading>
+        <div class="chat-entry-container recv-container"
+        [ngClass]="{'bring-in-textbox':bringInTextbox}">
+            <div class="chat-entry-wrapper">
+                <div class="chat-entry-bubble chat-bubble-recv">
+                    <div class="chat-entry-text laurelin-text-regular">
+                        {{msg}}
+                    </div>
+                </div>
+                <div class="chat-entry-metadata laurelin-chat-subtext">
+                    {{ts | date:'dd.MM.yyy HH:mm:ss'}}
+                </div>
+            </div>
+        </div>
+    </ng-template>
+</ng-template>

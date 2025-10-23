@@ -14,18 +14,16 @@ echo "🚀 Deploying Frontend to Cloud Storage..."
 # Set project
 gcloud config set project $PROJECT_ID
 
-# Build the frontend
+# Use pre-built static frontend
+echo "📦 Using pre-built static frontend..."
 cd apps/frontend
-npm install
-npm run build
 
 # Create bucket if it doesn't exist
 echo "🪣 Creating storage bucket..."
 gsutil mb gs://$BUCKET_NAME || echo "Bucket already exists"
 
-# Set bucket permissions
-echo "🔐 Setting bucket permissions..."
-gsutil iam ch allUsers:objectViewer gs://$BUCKET_NAME
+# Skip public permissions due to organization policy
+echo "⚠️  Skipping public permissions due to organization policy..."
 
 # Upload files
 echo "📤 Uploading files..."
@@ -33,14 +31,7 @@ gsutil -m cp -r dist/* gs://$BUCKET_NAME/
 
 # Set cache headers
 echo "⚡ Setting cache headers..."
-gsutil -m setmeta -h "Cache-Control:public, max-age=3600" gs://$BUCKET_NAME/*.js
-gsutil -m setmeta -h "Cache-Control:public, max-age=3600" gs://$BUCKET_NAME/*.css
-gsutil -m setmeta -h "Cache-Control:public, max-age=86400" gs://$BUCKET_NAME/*.png
-gsutil -m setmeta -h "Cache-Control:public, max-age=86400" gs://$BUCKET_NAME/*.jpg
-gsutil -m setmeta -h "Cache-Control:public, max-age=86400" gs://$BUCKET_NAME/*.ico
-
-# Set index.html to no-cache
-gsutil -m setmeta -h "Cache-Control:no-cache" gs://$BUCKET_NAME/index.html
+gsutil -m setmeta -h "Cache-Control:no-cache" gs://$BUCKET_NAME/index.html || echo "No index.html found"
 
 echo "✅ Frontend deployment completed!"
 echo ""

@@ -3,11 +3,12 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { BedrockRuntimeClient, InvokeModelCommand } from '@aws-sdk/client-bedrock-runtime';
 import { ConfigService } from './config.service';
 import { LLMRequest, LLMResponse, ModelProvider } from '../types';
+import axios from 'axios';
 
 export class LLMService {
-  private openai: OpenAI;
-  private googleAI: GoogleGenerativeAI;
-  private bedrockClient: BedrockRuntimeClient;
+  private openai!: OpenAI;
+  private googleAI!: GoogleGenerativeAI;
+  private bedrockClient!: BedrockRuntimeClient;
   private config: ConfigService;
 
   constructor() {
@@ -65,6 +66,16 @@ export class LLMService {
           vision: true,
           max_tokens: 200000
         }
+      },
+      {
+        name: 'custom-gpu',
+        models: ['oss120'],
+        capabilities: {
+          streaming: false,
+          function_calling: false,
+          vision: false,
+          max_tokens: 4000
+        }
       }
     ];
   }
@@ -80,6 +91,8 @@ export class LLMService {
           return await this.generateGoogleResponse(request);
         case 'aws-bedrock':
           return await this.generateBedrockResponse(request);
+        case 'custom-gpu':
+          return await this.generateCustomGpuResponse(request);
         default:
           throw new Error(`Unsupported model provider: ${provider}`);
       }
@@ -105,7 +118,7 @@ export class LLMService {
       })),
       temperature: request.temperature || 0.7,
       max_tokens: request.max_tokens || 1000,
-      stream: request.stream || false
+      stream: false // Disable streaming for now to fix type issues
     });
 
     return {
@@ -190,6 +203,46 @@ export class LLMService {
     };
   }
 
+  private async generateCustomGpuResponse(request: LLMRequest): Promise<LLMResponse> {
+    const config = this.config.getConfig();
+    
+    if (!config.customGpuEndpoint || !config.customGpuApiKey) {
+      throw new Error('Custom GPU endpoint or API key not configured');
+    }
+
+    // Convert messages to prompt format
+    const prompt = this.convertMessagesToPrompt(request.messages);
+
+    try {
+      const response = await axios.post(config.customGpuEndpoint, {
+        prompt: prompt,
+        max_tokens: request.max_tokens || 1000,
+        temperature: request.temperature || 0.7,
+        model: request.model_name || 'oss120'
+      }, {
+        headers: {
+          'Authorization': `Bearer ${config.customGpuApiKey}`,
+          'Content-Type': 'application/json'
+        },
+        timeout: 30000 // 30 second timeout
+      });
+
+      return {
+        success: true,
+        content: response.data.response || response.data.text || response.data.content || '',
+        model_used: request.model_name || 'oss120',
+        provider: 'custom-gpu',
+        metadata: {
+          finish_reason: 'stop',
+          model: request.model_name || 'oss120'
+        }
+      };
+    } catch (error) {
+      console.error('Custom GPU API error:', error);
+      throw new Error(`Custom GPU API error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
   private convertMessagesToPrompt(messages: any[]): string {
     return messages
       .map(msg => {
@@ -245,6 +298,31 @@ export class LLMService {
     } catch (error) {
       console.error('AWS Bedrock health check failed:', error);
       results['aws-bedrock'] = false;
+    }
+
+    // Test Custom GPU
+    try {
+      const config = this.config.getConfig();
+      if (config.customGpuEndpoint && config.customGpuApiKey) {
+        await axios.post(config.customGpuEndpoint, {
+          prompt: 'Hello',
+          max_tokens: 10,
+          temperature: 0.7,
+          model: 'oss120'
+        }, {
+          headers: {
+            'Authorization': `Bearer ${config.customGpuApiKey}`,
+            'Content-Type': 'application/json'
+          },
+          timeout: 10000
+        });
+        results['custom-gpu'] = true;
+      } else {
+        results['custom-gpu'] = false;
+      }
+    } catch (error) {
+      console.error('Custom GPU health check failed:', error);
+      results['custom-gpu'] = false;
     }
 
     return results;

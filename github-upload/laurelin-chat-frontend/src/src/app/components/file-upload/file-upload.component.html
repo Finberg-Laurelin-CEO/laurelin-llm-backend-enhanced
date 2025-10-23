@@ -1,0 +1,66 @@
+<div class="file-upload">
+  <div class="upload-zone" 
+       [class.drag-over]="isDragOver"
+       [class.uploading]="uploading"
+       (dragover)="onDragOver($event)"
+       (dragleave)="onDragLeave($event)"
+       (drop)="onDrop($event)">
+    
+    <div class="upload-content" *ngIf="!uploading">
+      <div class="upload-icon">📁</div>
+      <div class="upload-text">
+        <strong>Drop files here</strong> or 
+        <label for="file-input" class="file-input-label">browse</label>
+        <input 
+          id="file-input" 
+          type="file" 
+          multiple 
+          (change)="onFileSelect($event)"
+          accept=".pdf,.txt,.csv,.json,.jpg,.jpeg,.png,.gif,.doc,.docx,.xls,.xlsx"
+          class="file-input">
+      </div>
+      <div class="upload-hint">
+        Supports: PDF, TXT, CSV, JSON, images, Office docs (max 10MB each)
+      </div>
+    </div>
+
+    <div class="upload-progress" *ngIf="uploading">
+      <div class="progress-icon">⏳</div>
+      <div class="progress-text">Uploading...</div>
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="uploadProgress"></div>
+      </div>
+      <div class="progress-percentage">{{ uploadProgress }}%</div>
+    </div>
+  </div>
+
+  <div class="uploaded-files" *ngIf="uploadedFiles.length > 0">
+    <div class="files-header">
+      <h4>Uploaded Files ({{ uploadedFiles.length }})</h4>
+    </div>
+    <div class="files-list">
+      <div *ngFor="let file of uploadedFiles" class="file-item">
+        <div class="file-icon">{{ getFileIcon(file.contentType) }}</div>
+        <div class="file-info">
+          <div class="file-name">{{ file.originalName }}</div>
+          <div class="file-meta">
+            {{ formatFileSize(file.size) }} • {{ file.contentType }}
+          </div>
+        </div>
+        <button 
+          type="button" 
+          (click)="removeFile(file.id)" 
+          class="remove-btn"
+          title="Remove file">
+          ✕
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="error-message" *ngIf="error">
+    <span class="error-icon">⚠️</span>
+    <span class="error-text">{{ error }}</span>
+    <button type="button" (click)="clearError()" class="error-close">✕</button>
+  </div>
+</div>

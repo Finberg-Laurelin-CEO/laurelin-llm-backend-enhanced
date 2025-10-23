@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: laurelin-3-service
+  namespace: default
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 8000
+    protocol: TCP
+    name: http
+  selector:
+    app: gpt-oss-120b-vllm-inference-server
+---
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: laurelin-3-ssl-cert
+  namespace: default
+spec:
+  domains:
+    - oss120.laurelin-inc.com

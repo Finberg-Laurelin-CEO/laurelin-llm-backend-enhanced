@@ -1,0 +1,55 @@
+<div class="model-selector">
+  <div class="selector-group">
+    <label for="provider-select">AI Provider:</label>
+    <select 
+      id="provider-select" 
+      [(ngModel)]="selectedProvider" 
+      (change)="onProviderChange($event.target.value)"
+      [disabled]="loading"
+      class="provider-select">
+      <option *ngFor="let provider of providers" [value]="provider.name">
+        {{ getProviderDisplayName(provider.name) }}
+      </option>
+    </select>
+  </div>
+
+  <div class="selector-group">
+    <label for="model-select">Model:</label>
+    <select 
+      id="model-select" 
+      [(ngModel)]="selectedModel" 
+      (change)="onModelChange($event.target.value)"
+      [disabled]="loading || availableModels.length === 0"
+      class="model-select">
+      <option *ngFor="let model of availableModels" [value]="model">
+        {{ getModelDisplayName(model) }}
+      </option>
+    </select>
+  </div>
+
+  <div class="capabilities" *ngIf="selectedProvider">
+    <div class="capability-tags">
+      <span 
+        *ngFor="let capability of getProviderCapabilities(selectedProvider)" 
+        class="capability-tag">
+        {{ capability }}
+      </span>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button 
+      type="button" 
+      (click)="refreshModels()" 
+      [disabled]="loading"
+      class="refresh-btn">
+      <span *ngIf="loading" class="spinner"></span>
+      {{ loading ? 'Loading...' : 'Refresh' }}
+    </button>
+  </div>
+
+  <div class="error" *ngIf="error">
+    <span class="error-icon">⚠️</span>
+    {{ error }}
+  </div>
+</div>

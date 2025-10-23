@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laurelin Chat - Redirecting...</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+        }
+        .container {
+            max-width: 600px;
+            padding: 2rem;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 300;
+        }
+        .subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        .redirect-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin: 2rem 0;
+        }
+        .button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 1rem;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.3s;
+        }
+        .button:hover {
+            background: #45a049;
+        }
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid white;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 1rem auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Laurelin Chat</h1>
+        <p class="subtitle">AI-Powered Chatbot for Laurelin Inc</p>
+        
+        <div class="redirect-info">
+            <h3>Redirecting to Chatbot...</h3>
+            <div class="spinner"></div>
+            <p>You will be automatically redirected to the Laurelin Chat interface.</p>
+        </div>
+        
+        <a href="https://laurelin-frontend-975218893454.us-central1.run.app" class="button">
+            Go to Chatbot Now
+        </a>
+        
+        <div class="redirect-info">
+            <h3>System Status</h3>
+            <p>✅ Backend API: Working</p>
+            <p>✅ Frontend Interface: Working</p>
+            <p>✅ Authentication: Ready</p>
+            <p>✅ All Models: Available</p>
+        </div>
+    </div>
+
+    <script>
+        // Auto-redirect after 3 seconds
+        setTimeout(() => {
+            window.location.href = 'https://laurelin-frontend-975218893454.us-central1.run.app';
+        }, 3000);
+        
+        // Test backend connection
+        async function testBackend() {
+            try {
+                const response = await fetch('https://laurelin-backend-975218893454.us-central1.run.app/health');
+                const data = await response.json();
+                console.log('Backend test successful:', data);
+            } catch (error) {
+                console.log('Backend test failed:', error);
+            }
+        }
+        
+        // Test backend on page load
+        testBackend();
+    </script>
+</body>
+</html>

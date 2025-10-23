@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laurelin Chat - Working Version</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .chat-container {
+            width: 90%;
+            max-width: 800px;
+            height: 80vh;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .chat-header {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 1rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .chat-header h1 {
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+        }
+        
+        .chat-header p {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .message {
+            max-width: 70%;
+            padding: 1rem;
+            border-radius: 15px;
+            word-wrap: break-word;
+        }
+        
+        .message.user {
+            background: rgba(76, 175, 80, 0.3);
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .message.assistant {
+            background: rgba(33, 150, 243, 0.3);
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+        
+        .message.system {
+            background: rgba(255, 193, 7, 0.3);
+            align-self: center;
+            text-align: center;
+            font-style: italic;
+        }
+        
+        .chat-input {
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .chat-input input {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .chat-input input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .chat-input button {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 25px;
+            background: #4CAF50;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .chat-input button:hover {
+            background: #45a049;
+        }
+        
+        .chat-input button:disabled {
+            background: rgba(255, 255, 255, 0.3);
+            cursor: not-allowed;
+        }
+        
+        .model-selector {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .model-selector select {
+            padding: 0.5rem;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        
+        .model-selector select option {
+            background: #333;
+            color: white;
+        }
+        
+        .status {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>Laurelin Chat</h1>
+            <p>AI-Powered Chatbot for Laurelin Inc</p>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <div class="message system">
+                Welcome to Laurelin Chat! This is a working version while we deploy the full system.
+            </div>
+        </div>
+        
+        <div class="model-selector">
+            <label for="modelSelect">Model:</label>
+            <select id="modelSelect">
+                <option value="google">Google Gemini Pro</option>
+                <option value="openai">OpenAI GPT-3.5</option>
+                <option value="custom-gpu">OSS120 (Custom GPU)</option>
+            </select>
+        </div>
+        
+        <div class="chat-input">
+            <input type="text" id="messageInput" placeholder="Type your message here..." />
+            <button id="sendButton" onclick="sendMessage()">Send</button>
+        </div>
+        
+        <div class="status" id="status">
+            Ready to chat
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://laurelin-backend-975218893454.us-central1.run.app';
+        let sessionId = `session-${Date.now()}`;
+        
+        const chatMessages = document.getElementById('chatMessages');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const status = document.getElementById('status');
+        const modelSelect = document.getElementById('modelSelect');
+        
+        // Add message to chat
+        function addMessage(content, type = 'assistant') {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = content;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // Update status
+        function updateStatus(message) {
+            status.textContent = message;
+        }
+        
+        // Send message
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+            
+            // Add user message to chat
+            addMessage(message, 'user');
+            messageInput.value = '';
+            sendButton.disabled = true;
+            updateStatus('Sending message...');
+            
+            try {
+                const response = await fetch(`${API_BASE}/chat`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        modelProvider: modelSelect.value,
+                        sessionId: sessionId
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    addMessage(data.content, 'assistant');
+                    updateStatus(`Response from ${data.model_used} (${data.provider})`);
+                } else {
+                    addMessage(`Error: ${data.error}`, 'system');
+                    updateStatus('Error occurred');
+                }
+                
+            } catch (error) {
+                console.error('Chat error:', error);
+                addMessage(`Connection error: ${error.message}`, 'system');
+                updateStatus('Connection failed');
+            } finally {
+                sendButton.disabled = false;
+                messageInput.focus();
+            }
+        }
+        
+        // Handle Enter key
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !sendButton.disabled) {
+                sendMessage();
+            }
+        });
+        
+        // Test connection on load
+        async function testConnection() {
+            updateStatus('Testing connection...');
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                if (response.ok) {
+                    const data = await response.json();
+                    updateStatus(`Connected - ${data.service} v${data.version}`);
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                updateStatus(`Connection failed: ${error.message}`);
+                addMessage('Note: Backend connection failed. This is a demo version.', 'system');
+            }
+        }
+        
+        // Initialize
+        testConnection();
+        messageInput.focus();
+    </script>
+</body>
+</html>

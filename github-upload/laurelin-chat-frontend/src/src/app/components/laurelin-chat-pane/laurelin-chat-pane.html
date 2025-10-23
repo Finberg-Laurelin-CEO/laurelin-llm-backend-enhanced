@@ -1,0 +1,8 @@
+<div class=chat-pane-container>
+    <div class="chat-pane-wrapper">
+        <div class="chat-pane-entry-container"
+        *ngFor="let entry of entries;">
+            <laurelin-chat-entry [ts]="entry.ts" [sent]="entry.sent" [msg]="entry.msg"></laurelin-chat-entry>
+        </div>
+    </div>
+</div>

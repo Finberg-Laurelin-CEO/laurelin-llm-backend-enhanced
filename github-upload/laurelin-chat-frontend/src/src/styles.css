@@ -1,0 +1,20 @@
+/* You can add global styles to this file, and also import other style files */
+.laurelin-text-large {
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    color: #666;
+    font-size: 3rem;
+}
+.laurelin-text-regular {
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 1rem;
+}
+.laurelin-text-input {
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 1.5rem;
+}
+.laurelin-chat-subtext {
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    font-style: italic;
+    font-size: .75rem;
+}
+
